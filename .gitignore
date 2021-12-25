@@ -1,3 +1,10 @@
 # Skip generated binaries
 hello
 fetch
+http
+client
+server
+
+# Skip generated files in www folder
+www
+

@@ -6,12 +6,10 @@ int main() {
 }
 
 /*
+# This: hello-world.c
+# Prev: -
+# Next: hello-literal-string.c
 
-# File:
-hello-world.c
-# Build:
-gcc hello-world.c -o hello
-# Run:
-./hello
-
+# Build & run:
+gcc hello-world.c -o hello && ./hello
 */

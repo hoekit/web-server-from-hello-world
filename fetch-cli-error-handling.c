@@ -29,9 +29,9 @@ int main(int argc, char *argv[]) {
 }
 
 /*
-# This: fetch-function-error-handling.c
-# Prev: fetch-function-happy.c
-# Next: fetch-cli-error-handling.c
+# This: fetch-cli-error-handling.c
+# Prev: fetch-function-error-handling.c
+# Next: learn-about-sockets.md
 
 # Build & run:
 gcc fetch-function.c -o fetch && ./fetch
