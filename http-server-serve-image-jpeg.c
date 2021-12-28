@@ -28,19 +28,19 @@
 #include <unistd.h>
     // ssize_t write(int fd, const void *buf, size_t count);
 
-int swrite(int sockfd, const char *str) {
+static int swrite(int sockfd, const char *str) {
     // Helper to write a string to the socket
     if (write(sockfd, str, strlen(str)) < 0) {
         perror("ERROR writing to socket");
     }
 }
-int swrite_file(int sockfd, char* fname) {
+static int swrite_file(int sockfd, char* fname) {
     // Helper to write content of a file to the socket
 
     // open fname
     int fd = open(fname, O_RDONLY);
     if (fd == -1) {
-        swrite(sockfd,"404 Not Found\n");   // print content
+        dprintf(sockfd,"404 Not Found\n");  // print content
         return 1;
     }
 
@@ -67,27 +67,7 @@ int swrite_file(int sockfd, char* fname) {
     }
     return 0;
 }
-int swrite_text_file(int sockfd, char* fname) {
-    // Helper to write content of a file to the socket
-
-    // open fname
-    FILE *fp = fopen(fname, "r");
-    if (!fp) {
-        swrite(sockfd,"404 Not Found\n");   // print content
-        return 1;
-    }
-
-    // read from fname and write to socket
-    char con[100];                         // store content in a char array
-    while (fgets(con, 100, fp) != NULL) {  // read from file into array
-        printf("%s",con);
-        swrite(sockfd,con);                 // write contents to socket
-    }
-
-    fclose(fp);                             // close file
-    return 0;
-}
-int res_not_found(char *res) {
+static int res_not_found(char *res) {
     // Check if resource can be accessed
     // If cannot read, return 1
     // If can be read, return 0
@@ -99,14 +79,14 @@ int res_not_found(char *res) {
     fclose(fp);                             // close file
     return 0;
 }
-void get_extension(const char *path, char *ext) {
+static void get_extension(const char *path, char *ext) {
     bzero(ext,sizeof(ext));
     char *dot = strrchr(path, '.');         // find last '.' char
     if (dot != NULL) {                      // if found
         strncpy(ext,++dot,9);               //   copy after '.' to ext
     }
 }
-void get_mime_type(const char *ext, char *mime, int mime_len) {
+static void get_mime_type(const char *ext, char *mime, int mime_len) {
     char *ext_lookup[8] = {
         "css",
         "html",
@@ -245,10 +225,10 @@ int main(int argc, char *argv[]) {
 
         // Handle missing resources
         if (res_not_found(path2) == 1) {
-            swrite(newsockfd,"HTTP/1.0 404 Not Found\n");
-            swrite(newsockfd,"Content-Type: text/plain\n");
-            swrite(newsockfd,"\n");
-            swrite(newsockfd,"404 Not Found\n");
+            dprintf(newsockfd,"HTTP/1.0 404 Not Found\n");
+            dprintf(newsockfd,"Content-Type: text/plain\n");
+            dprintf(newsockfd,"\n");
+            dprintf(newsockfd,"404 Not Found\n");
             close(newsockfd);               // Cleanup
             continue;                       // Skip further processing
         }
@@ -273,13 +253,12 @@ int main(int argc, char *argv[]) {
 
         // Send the file specified in the path
         char str[512];
-        swrite(newsockfd,"HTTP/1.0 200 OK\n");
-        sprintf(str,"Content-Type: %s\n",mime);
-        swrite(newsockfd,str);
-        sprintf(str,"Content-Length: %ld\n",fsize);
-        swrite(newsockfd,"\n");
+        dprintf(newsockfd,"HTTP/1.0 200 OK\n");
+        dprintf(newsockfd,"Content-Type: %s\n",mime);
+        dprintf(newsockfd,"Content-Length: %ld\n",fsize);
+        dprintf(newsockfd,"\n");
+
         if (strstr(mime,"text") != NULL) {
-            // swrite_text_file(newsockfd,path2);
             swrite_file(newsockfd,path2);
         } else {
             swrite_file(newsockfd,path2);
