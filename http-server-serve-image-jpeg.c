@@ -131,11 +131,9 @@ int main(int argc, char *argv[]) {
         perror("setsockopt(SO_REUSEADDR) failed");
 
     // 2. Bind socket to a port
-    int portno;
-    if (argc < 2) {
-        portno = 9001;                      // Default port
-    } else {
-        portno = atoi(argv[1]);             // Get port number from argument
+    int portno = 9001;                      // Default port
+    if (argc > 1) {
+        portno = atoi(argv[1]);             // Port number from first argument
     }
 
     struct sockaddr_in serv_addr;           // Internet address with port
@@ -252,24 +250,16 @@ int main(int argc, char *argv[]) {
         // printf("Size of file: %ld\n",fsize);
 
         // Send the file specified in the path
-        char str[512];
         dprintf(newsockfd,"HTTP/1.0 200 OK\n");
         dprintf(newsockfd,"Content-Type: %s\n",mime);
         dprintf(newsockfd,"Content-Length: %ld\n",fsize);
         dprintf(newsockfd,"\n");
+        swrite_file(newsockfd,path2);
 
-        if (strstr(mime,"text") != NULL) {
-            swrite_file(newsockfd,path2);
-        } else {
-            swrite_file(newsockfd,path2);
-        }
-
-        // printf("Close newsockfd\n");
         usleep(1000);
-        close(newsockfd);                   // Cleanup
+        close(newsockfd);
     }
 
-    printf("Close sockfd");
     close(sockfd);
     return 0;
 }
