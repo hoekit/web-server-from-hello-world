@@ -36,3 +36,33 @@
 **String functions reference**
 
 - Page 264 of **C in a Nutshell**
+
+
+**ERROR binding socket to address: Address already in use**
+
+Problem: Restarting the server at the same port has errors
+
+    $ ./server 9001
+    ERROR on binding: Address already in use
+
+Cause: Client closed socket after server
+
+    The server has closed the socket but before the client did so it is
+    in a TIME_WAIT state.
+
+Solution: Use SO_REUSEADDR
+
+    This solution allows bind to use the socket if it is in a TIME_WAIT state.
+    See SO_REUSEADDR in:
+    - https://www.man7.org/linux/man-pages/man7/socket.7.html
+    See setsockopt() in:
+    - https://www.man7.org/linux/man-pages/man2/setsockopt.2.html
+
+    Use SO_REUSEADDR like so:
+
+    #include <sys/types.h>          /* See NOTES */
+    #include <sys/socket.h>
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR,
+            &(int){1}, sizeof(int)) < 0)
+        error("setsockopt(SO_REUSEADDR) failed");
+
