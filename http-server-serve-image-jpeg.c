@@ -179,10 +179,10 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in cli_addr;            // Clent internet address
 
     int clilen, newsockfd, n;
-    char buffer[512], req[512];
+    char buffer[5120], req[5120];
     for (;;) {
-        bzero(buffer,512);                  // Overwrite buffer with zeros
-        bzero(req,512);                     // Overwrite req with zeros
+        bzero(buffer,5120);                 // Overwrite buffer with zeros
+        bzero(req,5120);                    // Overwrite req with zeros
         clilen = sizeof(cli_addr);          // Size of address may change
         newsockfd = accept(                 // Wait for client connection
             sockfd,
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Read client request line
-        n = read(newsockfd,buffer,511);     // Read request line
+        n = read(newsockfd,buffer,5119);    // Read request line
         if (n < 0) {                        // On read socket error
             perror("ERROR reading socket");
             continue;
@@ -308,12 +308,41 @@ int main(int argc, char *argv[]) {
 */
 /* Issues
 **
+** Problem: Moving back and forth in browser history cause server to exit
+**
+** Steps to replicate:
+**   1. Start http server
+**   2. View the following in sequence
+**   - GET /README.md
+**   - GET /learn-about-sending-images.md
+**   - GET /README.md
+**   - GET /learn-about-sockets.md
+**   - GET /README.md
+**   - GET /learn-about-sockets.md
+**   - GET /README.md
+**   - GET /learn-about-cgi.md
+**   - GET /README.md
+**   - GET /learn-about-sending-images.md
+**   - GET /README.md
+**   - GET /txt/hello-server.c.txt
+**   3. Move back and forth
+**   4. At some point the server will exit
+**
+*/
+
+/* Fixed Problems
+**
 ** Problem: Consistently receive 'The connection was reset' error
 **
 ** Steps to replicate:
 **   1. Start http server
 **   2. Get /README.md
 **   3. Get /learn-about-sending-images.md
+**
+** Solution: Increase request buffer
+**
+**   Increasing the request buffer from 512 to 5120 seems to have fixed
+**   the problem.
 */
 /*
 # This: http-server-serve-image-jpeg.c
