@@ -66,17 +66,13 @@ static int swrite_file(int sockfd, char* fname) {
     }
     return 0;
 }
-static int res_not_found(char *res) {
-    // Check if resource can be accessed
-    // If cannot read, return 1
-    // If can be read, return 0
-
+static int canRead(char *res) {
+    // Return 1 if can open for reading, 0 otherwise
     FILE *fp = fopen(res, "r");
     if (!fp)
-        return 1;
-
+        return 0;                           // Cannot open for reading
     fclose(fp);                             // close file
-    return 0;
+    return 1;
 }
 static void get_extension(const char *path, char *ext) {
     bzero(ext,sizeof(ext));
@@ -278,7 +274,7 @@ int main(int argc, char *argv[]) {
         // printf("Path: %s\n", path2);
 
         // Handle missing resources
-        if (res_not_found(path2) == 1) {
+        if (canRead(path2) != 1) {
             dprintf(newsockfd,"HTTP/1.0 404 Not Found\n");
             dprintf(newsockfd,"Content-Type: text/plain\n");
             dprintf(newsockfd,"\n");
