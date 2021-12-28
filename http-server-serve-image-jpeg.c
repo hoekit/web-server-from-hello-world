@@ -195,8 +195,13 @@ int main(int argc, char *argv[]) {
 
         // Read client request line
         n = read(newsockfd,buffer,5119);    // Read request line
+
         if (n < 0) {                        // On read socket error
             perror("ERROR reading socket");
+            continue;
+        } else if (n == 0) {                // Zero bytes read
+            // printf("INFO zero bytes read\n");
+            close(newsockfd);
             continue;
         }
         // printf("\nRequest:\n%s", buffer);
@@ -306,8 +311,11 @@ int main(int argc, char *argv[]) {
   - Handle requests for generic images
   - Handle URIs with query parameters
 */
-/* Issues
+/* Issues (0)
+*/
+/* Fixed Problems (2)
 **
+** -------------------------------------------------------------------------
 ** Problem: Moving back and forth in browser history cause server to exit
 **
 ** Steps to replicate:
@@ -328,10 +336,15 @@ int main(int argc, char *argv[]) {
 **   3. Move back and forth
 **   4. At some point the server will exit
 **
-*/
-
-/* Fixed Problems
+** Solution:
 **
+** The error is caused by an unhandled condition where the client makes
+** a connection but sends zero bytes.
+**
+** To fix this, check for this condition and when found, close the socket
+** and wait again for another connection.
+**
+** -------------------------------------------------------------------------
 ** Problem: Consistently receive 'The connection was reset' error
 **
 ** Steps to replicate:
