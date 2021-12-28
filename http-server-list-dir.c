@@ -13,6 +13,9 @@
     // int stat(const char *pathname, struct stat *statbuf);
 #include <fcntl.h>
     // int open(const char *pathname, int flags);
+#include <dirent.h>
+    // DIR *opendir(const char *name);
+    // struct dirent *readdir(DIR *dirp);
 #include <strings.h>
     // void bzero(void *s, size_t n);
 #include <string.h>
@@ -27,6 +30,8 @@
     // uint16_t htons(uint16_t hostshort);
 #include <unistd.h>
     // ssize_t write(int fd, const void *buf, size_t count);
+
+static char DocRoot[] = ".";                // Document root
 
 static int swrite_file(int sockfd, char* fname) {
     // Helper to write content of a file to the socket
@@ -81,7 +86,9 @@ static void get_extension(const char *path, char *ext) {
     }
 }
 static void get_mime_type(const char *ext, char *mime, int mime_len) {
-    char *ext_lookup[8] = {
+    #define NMIME 9
+    char *ext_lookup[NMIME] = {
+        "c",
         "css",
         "html",
         "ico",
@@ -91,7 +98,8 @@ static void get_mime_type(const char *ext, char *mime, int mime_len) {
         "png",
         "txt",
     };
-    char *mime_lookup[8] = {
+    char *mime_lookup[NMIME] = {
+        "text/plain; charset=utf-8",        // .c
         "text/css; charset=utf-8",
         "text/html; charset=utf-8",
         "image/x-icon",
@@ -101,7 +109,7 @@ static void get_mime_type(const char *ext, char *mime, int mime_len) {
         "image/png",
         "text/plain; charset=utf-8",        // .txt
     };
-    for (int i=0; i<8; i++) {
+    for (int i=0; i<NMIME; i++) {
         if (strcmp(ext,ext_lookup[i]) == 0) {
             // printf("mime_lookup[%d]: %s\n",i,mime_lookup[i]);
             strncpy(mime,mime_lookup[i],mime_len-1);
@@ -109,6 +117,59 @@ static void get_mime_type(const char *ext, char *mime, int mime_len) {
         }
     }
 }
+
+/*
+** Check if pathname is a directory
+*/
+static int isDir (const char *pathname) {
+    int len = strlen(pathname);
+    if (pathname[len-1] == '/') {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+/*
+** Generate directory HTML page and return the size of the generated page
+*/
+static int SendDirPage(int fd, const char *path) {
+    dprintf(fd,"HTTP/1.0 200 OK\n");
+    dprintf(fd,"Content-Type: text/html\n");
+    dprintf(fd,"\n");
+    dprintf(fd,"<html><body>");
+    dprintf(fd,"<h2>Directory %s</h2>",path);
+
+    // Iterate over directory entries
+    DIR *dirp = opendir(path);
+    struct dirent *dp;
+    if (dirp == NULL) {
+        perror("ERROR opening directory");
+        return -1;
+    }
+    for (;;) {
+        dp = readdir(dirp);
+        if (dp == NULL)
+            break;
+
+        if ( strcmp(dp->d_name,".") == 0 || strcmp(dp->d_name, "..") == 0 )
+            continue;
+
+        if (dp->d_type == 4) {                  // Directory
+            // printf("%s/\n", dp->d_name);
+            dprintf(fd,"<li><a href=\"/%s/\">%s/</a>",dp->d_name,dp->d_name);
+        } else if (dp->d_type == 8) {           // Files
+            // printf("%s\n", dp->d_name);
+            dprintf(fd,"<li><a href=\"%s\">%s</a>",dp->d_name,dp->d_name);
+        } else {                                // Symlinks
+            // printf("%d %s\n", dp->d_type, dp->d_name);
+            dprintf(fd,"<li>%s",dp->d_name);
+        }
+    }
+
+    dprintf(fd,"</body></html>");
+}
+
 int main(int argc, char *argv[]) {
     // 1. Create a socket
     int sockfd = socket(                    // Create a socket
@@ -211,7 +272,8 @@ int main(int argc, char *argv[]) {
         //        method, path, version);
 
         // Prefix request path with www
-        char path2[256] = ".";
+        char path2[256] = "";
+        strcat(path2, DocRoot);             // Prefix with document root
         strcat(path2, path);
         // printf("Path: %s\n", path2);
 
@@ -243,12 +305,17 @@ int main(int argc, char *argv[]) {
         long int fsize = sbuf.st_size;
         // printf("Size of file: %ld\n",fsize);
 
-        // Send the file specified in the path
-        dprintf(newsockfd,"HTTP/1.0 200 OK\n");
-        dprintf(newsockfd,"Content-Type: %s\n",mime);
-        dprintf(newsockfd,"Content-Length: %ld\n",fsize);
-        dprintf(newsockfd,"\n");
-        swrite_file(newsockfd,path2);
+        if (isDir(path2)) {
+            SendDirPage(newsockfd,path2);
+            // printf("Page: \n%s",page);
+        } else {
+            // Send the file specified in the path
+            dprintf(newsockfd,"HTTP/1.0 200 OK\n");
+            dprintf(newsockfd,"Content-Type: %s\n",mime);
+            dprintf(newsockfd,"Content-Length: %ld\n",fsize);
+            dprintf(newsockfd,"\n");
+            swrite_file(newsockfd,path2);
+        }
 
         usleep(1000);
         close(newsockfd);
@@ -266,66 +333,20 @@ int main(int argc, char *argv[]) {
     e.g. GET /www/hello.html HTTP/1.1
   - Send 404 Not Found if the resource is missing
   - Send .jpg resources
+  - List directories
 
 - This version cannot:
-  - Handle directories
   - Handle HTTP/1.1 yet
   - Handle client request > 512 bytes
   - Handle requests for generic images
   - Handle URIs with query parameters
 */
-/* Issues (0)
-*/
-/* Fixed Problems (2)
-**
-** -------------------------------------------------------------------------
-** Problem: Moving back and forth in browser history cause server to exit
-**
-** Steps to replicate:
-**   1. Start http server
-**   2. View the following in sequence
-**   - GET /README.md
-**   - GET /learn-about-sending-images.md
-**   - GET /README.md
-**   - GET /learn-about-sockets.md
-**   - GET /README.md
-**   - GET /learn-about-sockets.md
-**   - GET /README.md
-**   - GET /learn-about-cgi.md
-**   - GET /README.md
-**   - GET /learn-about-sending-images.md
-**   - GET /README.md
-**   - GET /txt/hello-server.c.txt
-**   3. Move back and forth
-**   4. At some point the server will exit
-**
-** Solution:
-**
-** The error is caused by an unhandled condition where the client makes
-** a connection but sends zero bytes.
-**
-** To fix this, check for this condition and when found, close the socket
-** and wait again for another connection.
-**
-** -------------------------------------------------------------------------
-** Problem: Consistently receive 'The connection was reset' error
-**
-** Steps to replicate:
-**   1. Start http server
-**   2. Get /README.md
-**   3. Get /learn-about-sending-images.md
-**
-** Solution: Increase request buffer
-**
-**   Increasing the request buffer from 512 to 5120 seems to have fixed
-**   the problem.
-*/
 /*
-# This: http-server-serve-image-jpeg.c
-# Prev: http-server-404-on-not-found.c
-# Next: http-server-list-dir.c
+# This: http-server-list-dir.c
+# Prev: http-server-serve-image-jpeg.c
+# Next: -
 
 # Build & run:
-gcc http-server-serve-image-jpeg.c -o http && ./http 9001
+gcc http-server-list-dir.c -o http && ./http
 */
 
