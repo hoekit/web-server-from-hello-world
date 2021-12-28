@@ -146,8 +146,17 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR,
+            &(int){1}, sizeof(int)) < 0)
+        perror("setsockopt(SO_REUSEADDR) failed");
+
     // 2. Bind socket to a port
-    int portno = atoi(argv[1]);             // Get port number from argument
+    int portno;
+    if (argc < 2) {
+        portno = 9001;                      // Default port
+    } else {
+        portno = atoi(argv[1]);             // Get port number from argument
+    }
 
     struct sockaddr_in serv_addr;           // Internet address with port
     bzero( (char*) &serv_addr,              //   Initialize struct to zeros '\0'
@@ -225,7 +234,7 @@ int main(int argc, char *argv[]) {
         //        method, path, version);
 
         // Prefix request path with www
-        char path2[256] = "www";
+        char path2[256] = ".";
         strcat(path2, path);
         // printf("Path: %s\n", path2);
 
@@ -271,11 +280,12 @@ int main(int argc, char *argv[]) {
             swrite_file(newsockfd,path2);
         }
 
-        printf("Close newsockfd\n");
+        // printf("Close newsockfd\n");
         usleep(1000);
         close(newsockfd);                   // Cleanup
     }
 
+    printf("Close sockfd");
     close(sockfd);
     return 0;
 }
@@ -295,6 +305,15 @@ int main(int argc, char *argv[]) {
   - Handle client request > 512 bytes
   - Handle requests for generic images
   - Handle URIs with query parameters
+*/
+/* Issues
+**
+** Problem: Consistently receive 'The connection was reset' error
+**
+** Steps to replicate:
+**   1. Start http server
+**   2. Get /README.md
+**   3. Get /learn-about-sending-images.md
 */
 /*
 # This: http-server-serve-image-jpeg.c

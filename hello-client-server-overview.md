@@ -30,6 +30,7 @@ On the server, the following happens:
 ## Client
 
 On the client, the following happens:
+
 1. Create a socket.
 2. Connect the socket to the port on the server
 3. Send and receive data
