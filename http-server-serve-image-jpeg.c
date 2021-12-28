@@ -28,12 +28,6 @@
 #include <unistd.h>
     // ssize_t write(int fd, const void *buf, size_t count);
 
-static int swrite(int sockfd, const char *str) {
-    // Helper to write a string to the socket
-    if (write(sockfd, str, strlen(str)) < 0) {
-        perror("ERROR writing to socket");
-    }
-}
 static int swrite_file(int sockfd, char* fname) {
     // Helper to write content of a file to the socket
 
