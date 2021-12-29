@@ -118,14 +118,14 @@ static int isDir (const char *pathname) {
 /*
 ** Generate directory HTML page and return the size of the generated page
 */
-static int SendDirPage(int fd, const char *path) {
+static int SendDirPage(int fd, const char *path, const char *base) {
     dprintf(fd,"HTTP/1.0 200 OK\r\n"
         "Content-Type: text/html\r\n"
         "\r\n"
         "<html>\n"
         "<head><meta charset=\"utf-8\"/></head>\n"
         "<body>\n"
-        "<h2>Directory %s</h2>\n<ul>\n",path);
+        "<h2>Directory %s</h2>\n<ul>\n",base);
 
     // Iterate over directory entries
     DIR *dirp = opendir(path);
@@ -144,7 +144,7 @@ static int SendDirPage(int fd, const char *path) {
 
         if (dp->d_type == 4) {                  // Directory
             // printf("%s/\n", dp->d_name);
-            dprintf(fd,"  <li><a href=\"/%s/\">%s/</a>\n",dp->d_name,dp->d_name);
+            dprintf(fd,"  <li><a href=\"%s/%s/\">%s/</a>\n",base,dp->d_name,dp->d_name);
         } else if (dp->d_type == 8) {           // Files
             // printf("%s\n", dp->d_name);
             dprintf(fd,"  <li><a href=\"%s\">%s</a>\n",dp->d_name,dp->d_name);
@@ -155,6 +155,17 @@ static int SendDirPage(int fd, const char *path) {
     }
 
     dprintf(fd,"</ul>\n</body>\n</html>");
+}
+
+/*
+** Tell client no such resource
+*/
+static void NotFound(int fd) {
+    dprintf(fd,
+        "HTTP/1.0 404 Not Found\r\n"
+        "Content-Type: text/plain\r\n"
+        "\r\n"
+        "404 Not Found\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -198,12 +209,15 @@ int main(int argc, char *argv[]) {
     listen(sockfd,5);
     struct sockaddr_in cli_addr;            // Clent internet address
 
-    int clilen, newsockfd, nIn;
+    int clilen, nIn;
+    int newsockfd = -1;                     // Fake, invalid socket
     char buf[5120], req[5120];
     for (;;) {
         bzero(buf,5120);                    // Overwrite buffer with zeros
         bzero(req,5120);                    // Overwrite req with zeros
         clilen = sizeof(cli_addr);          // Size of address may change
+        if( newsockfd>-1 )                  // Close valid open sockets
+            close(newsockfd);               //   from previous connection
         newsockfd = accept(                 // Wait for client connection
             sockfd,
             (struct sockaddr *) &cli_addr,
@@ -220,8 +234,6 @@ int main(int argc, char *argv[]) {
             perror("ERROR reading socket");
             continue;
         } else if (nIn == 0) {              // Zero bytes read
-            // printf("INFO zero bytes read\n");
-            close(newsockfd);
             continue;
         }
         // printf("\nRequest:\n%s", buf);
@@ -253,6 +265,12 @@ int main(int argc, char *argv[]) {
         // printf("Method: %s Path: %s Version: %s",
         //        method, rpath, version);
 
+        // Guard: Path must start with /
+        if( rpath[0]!='/' ) {
+            NotFound(newsockfd);
+            continue;
+        }
+
         // Prefix request path with www
         char path[256] = "";
         strcat(path, DocRoot);              // Prefix with document root
@@ -261,18 +279,26 @@ int main(int argc, char *argv[]) {
 
         // Handle missing resources
         if (canRead(path) != 1) {
-            dprintf(newsockfd,
-                "HTTP/1.0 404 Not Found\r\n"
-                "Content-Type: text/plain\r\n"
-                "\r\n"
-                "404 Not Found\n");
-            close(newsockfd);               // Cleanup
+            NotFound(newsockfd);
             continue;                       // Skip further processing
         }
 
+        // Split rpath into base and file
+        char *z;
+        char *base = rpath;
+        char *file;
+        for( z=rpath; *z; z++ ){
+            if( *z=='/' )
+                file = z;
+        }
+        *file = 0;
+        file++;
+        // printf("Base: %s\n", base);
+        // printf("File: %s\n", file);
+
         // Extract extension from path
         char ext[10];
-        getExt(path,ext);
+        getExt(file,ext);
         // printf("Extension: '%s'\n", ext);
 
         // Determine MIME type from extension
@@ -288,7 +314,7 @@ int main(int argc, char *argv[]) {
         // printf("Size of file: %ld\n",fsize);
 
         if (isDir(path)) {
-            SendDirPage(newsockfd,path);
+            SendDirPage(newsockfd,path,base);
             // printf("Page: \n%s",page);
         } else {
             // Send the file specified in the path
@@ -300,7 +326,6 @@ int main(int argc, char *argv[]) {
         }
 
         usleep(1000);
-        close(newsockfd);
     }
 
     close(sockfd);
