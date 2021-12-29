@@ -36,32 +36,29 @@ static char DocRoot[] = ".";                // Document root
 static int swrite_file(int sockfd, char* fname) {
     // Helper to write content of a file to the socket
 
-    // open fname
     int fd = open(fname, O_RDONLY);
     if (fd == -1) {
-        dprintf(sockfd,"404 Not Found\n");  // print content
+        dprintf(sockfd,"404 Not Found\n");
         return 1;
     }
 
     // read from fname and write to socket
-    char con[512];                          // store content in a char array
+    char buf[512];
     int n;
     for (;;) {
-        n = read(fd,con,sizeof(con));
+        n = read(fd,buf,sizeof(buf));
 
-        if (n < 0) {                        // error on read
+        if (n > 0) {
+            if (write(sockfd,buf,n)<0) {            // write contents to socket
+                perror("ERROR writing socket");
+            }
+        } else if (n == 0) {                        // EOF
+            close(fd);
+            return 0;
+        } else {                                    // error on read
             perror("ERROR reading file");
             close(fd);
             return 1;
-        }
-        if (n == 0) {                       // EOF
-            close(fd);
-            return 0;
-        }
-        if (n > 0) {
-            if (write(sockfd,con,n)<0) {            // write contents to socket
-                perror("ERROR writing socket");
-            }
         }
     }
     return 0;
@@ -81,37 +78,29 @@ static void getExt(const char *path, char *ext) {
         strncpy(ext,++dot,9);               //   copy after '.' to ext
     }
 }
-static void lookupMime(const char *ext, char *mime, int szMime) {
-    #define NMIME 9
-    char *ext_lookup[NMIME] = {
-        "c",
-        "css",
-        "html",
-        "ico",
-        "jpg",
-        "md",
-        "mdown",
-        "png",
-        "txt",
+const char *lookupMime(const char *ext) {
+    struct {
+        const char *ext;
+        const char *mime;
+    } aMime[] = {
+        { "c",      "text/plain; charset=utf-8" },
+        { "css",    "text/css; charset=utf-8" },
+        { "html",   "text/html; charset=utf-8" },
+        { "ico",    "image/x-icon" },
+        { "jpg",    "image/jpeg" },
+        { "md",     "text/plain; charset=utf-8" },
+        { "mdown",  "text/plain; charset=utf-8" },
+        { "png",    "image/png" },
+        { "txt",    "text/plain; charset=utf-8" },
+        { "",       "placeholder/to-stop-search" },
     };
-    char *mime_lookup[NMIME] = {
-        "text/plain; charset=utf-8",        // .c
-        "text/css; charset=utf-8",
-        "text/html; charset=utf-8",
-        "image/x-icon",
-        "image/jpeg",
-        "text/plain; charset=utf-8",        // .md
-        "text/plain; charset=utf-8",        // .mdown
-        "image/png",
-        "text/plain; charset=utf-8",        // .txt
-    };
-    for (int i=0; i<NMIME; i++) {
-        if (strcmp(ext,ext_lookup[i]) == 0) {
-            // printf("mime_lookup[%d]: %s\n",i,mime_lookup[i]);
-            strncpy(mime,mime_lookup[i],szMime-1);
-            break;
+    // Linear search
+    for( int i=0; strlen(aMime[i].ext)>0; i++ ){
+        if( strcmp(ext,aMime[i].ext)==0 ){
+            return aMime[i].mime;
         }
     }
+    return "application/octet-stream";
 }
 
 /*
@@ -288,9 +277,8 @@ int main(int argc, char *argv[]) {
         getExt(path,ext);
         // printf("Extension: '%s'\n", ext);
 
-        // Determine MIME type from path
-        char mime[256] = "application/octet-stream";
-        lookupMime(ext,mime,sizeof(mime));
+        // Determine MIME type from extension
+        const char *mime = lookupMime(ext);
         // printf("MIME Type: '%s'\n", mime);
 
         // Determine size of content in bytes
