@@ -119,11 +119,13 @@ static int isDir (const char *pathname) {
 ** Generate directory HTML page and return the size of the generated page
 */
 static int SendDirPage(int fd, const char *path) {
-    dprintf(fd,"HTTP/1.0 200 OK\n");
-    dprintf(fd,"Content-Type: text/html\n");
-    dprintf(fd,"\n");
-    dprintf(fd,"<html><body>");
-    dprintf(fd,"<h2>Directory %s</h2>",path);
+    dprintf(fd,"HTTP/1.0 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "\r\n"
+        "<html>\n"
+        "<head><meta charset=\"utf-8\"/></head>\n"
+        "<body>\n"
+        "<h2>Directory %s</h2>\n<ul>\n",path);
 
     // Iterate over directory entries
     DIR *dirp = opendir(path);
@@ -142,17 +144,17 @@ static int SendDirPage(int fd, const char *path) {
 
         if (dp->d_type == 4) {                  // Directory
             // printf("%s/\n", dp->d_name);
-            dprintf(fd,"<li><a href=\"/%s/\">%s/</a>",dp->d_name,dp->d_name);
+            dprintf(fd,"  <li><a href=\"/%s/\">%s/</a>\n",dp->d_name,dp->d_name);
         } else if (dp->d_type == 8) {           // Files
             // printf("%s\n", dp->d_name);
-            dprintf(fd,"<li><a href=\"%s\">%s</a>",dp->d_name,dp->d_name);
+            dprintf(fd,"  <li><a href=\"%s\">%s</a>\n",dp->d_name,dp->d_name);
         } else {                                // Symlinks
             // printf("%d %s\n", dp->d_type, dp->d_name);
-            dprintf(fd,"<li>%s",dp->d_name);
+            dprintf(fd,"  <li>%s\n",dp->d_name);
         }
     }
 
-    dprintf(fd,"</body></html>");
+    dprintf(fd,"</ul>\n</body>\n</html>");
 }
 
 int main(int argc, char *argv[]) {
@@ -259,10 +261,11 @@ int main(int argc, char *argv[]) {
 
         // Handle missing resources
         if (canRead(path) != 1) {
-            dprintf(newsockfd,"HTTP/1.0 404 Not Found\n");
-            dprintf(newsockfd,"Content-Type: text/plain\n");
-            dprintf(newsockfd,"\n");
-            dprintf(newsockfd,"404 Not Found\n");
+            dprintf(newsockfd,
+                "HTTP/1.0 404 Not Found\r\n"
+                "Content-Type: text/plain\r\n"
+                "\r\n"
+                "404 Not Found\n");
             close(newsockfd);               // Cleanup
             continue;                       // Skip further processing
         }
@@ -289,10 +292,10 @@ int main(int argc, char *argv[]) {
             // printf("Page: \n%s",page);
         } else {
             // Send the file specified in the path
-            dprintf(newsockfd,"HTTP/1.0 200 OK\n");
-            dprintf(newsockfd,"Content-Type: %s\n",mime);
-            dprintf(newsockfd,"Content-Length: %ld\n",fsize);
-            dprintf(newsockfd,"\n");
+            dprintf(newsockfd,"HTTP/1.0 200 OK\r\n"
+                "Content-Type: %s\r\n"
+                "Content-Length: %ld\r\n"
+                "\r\n",mime,fsize);
             swrite_file(newsockfd,path);
         }
 
