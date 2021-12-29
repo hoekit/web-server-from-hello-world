@@ -224,16 +224,11 @@ int main(int argc, char *argv[]) {
         }
         // printf("\nRequest:\n%s", buf);
 
-        // Get the first line
-        int i = 0;
-        while (i < strlen(buf)) {
-            req[i] = buf[i];
-            if (req[i] == '\n')
-                break;
-            i++;
+        // Read up (but excluding) the first newline
+        for( int i=0; i<strlen(buf) && buf[i]!='\n' && buf[i]!='\r'; i++ ){
+            req[i]=buf[i];
         }
-        // printf("\nRequest[0]:\n%s", req);
-        printf("%s", req);
+        printf("%s\n", req);
 
         // Split line into method, path and version
         char method[16], rpath[256], version[16];
@@ -245,7 +240,7 @@ int main(int argc, char *argv[]) {
         };
         int t = 0;                          // Start with method as target
         int j = 0;                          // Index into each target
-        for (i = 0; i < strlen(req); i++) {
+        for( int i=0; i<strlen(req); i++ ){
             if (req[i] == ' ') {            // When space is seen
                 t++;                        // Switch to new target
                 j = 0;                      // Reset target index
