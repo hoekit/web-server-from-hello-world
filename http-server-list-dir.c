@@ -74,14 +74,14 @@ static int canRead(char *res) {
     fclose(fp);                             // close file
     return 1;
 }
-static void get_extension(const char *path, char *ext) {
+static void getExt(const char *path, char *ext) {
     bzero(ext,sizeof(ext));
     char *dot = strrchr(path, '.');         // find last '.' char
     if (dot != NULL) {                      // if found
         strncpy(ext,++dot,9);               //   copy after '.' to ext
     }
 }
-static void get_mime_type(const char *ext, char *mime, int mime_len) {
+static void lookupMime(const char *ext, char *mime, int szMime) {
     #define NMIME 9
     char *ext_lookup[NMIME] = {
         "c",
@@ -108,7 +108,7 @@ static void get_mime_type(const char *ext, char *mime, int mime_len) {
     for (int i=0; i<NMIME; i++) {
         if (strcmp(ext,ext_lookup[i]) == 0) {
             // printf("mime_lookup[%d]: %s\n",i,mime_lookup[i]);
-            strncpy(mime,mime_lookup[i],mime_len-1);
+            strncpy(mime,mime_lookup[i],szMime-1);
             break;
         }
     }
@@ -207,10 +207,10 @@ int main(int argc, char *argv[]) {
     listen(sockfd,5);
     struct sockaddr_in cli_addr;            // Clent internet address
 
-    int clilen, newsockfd, n;
-    char buffer[5120], req[5120];
+    int clilen, newsockfd, nIn;
+    char buf[5120], req[5120];
     for (;;) {
-        bzero(buffer,5120);                 // Overwrite buffer with zeros
+        bzero(buf,5120);                    // Overwrite buffer with zeros
         bzero(req,5120);                    // Overwrite req with zeros
         clilen = sizeof(cli_addr);          // Size of address may change
         newsockfd = accept(                 // Wait for client connection
@@ -223,22 +223,22 @@ int main(int argc, char *argv[]) {
         }
 
         // Read client request line
-        n = read(newsockfd,buffer,5119);    // Read request line
+        nIn = read(newsockfd,buf,5119);     // Read request line
 
-        if (n < 0) {                        // On read socket error
+        if (nIn < 0) {                      // On read socket error
             perror("ERROR reading socket");
             continue;
-        } else if (n == 0) {                // Zero bytes read
+        } else if (nIn == 0) {              // Zero bytes read
             // printf("INFO zero bytes read\n");
             close(newsockfd);
             continue;
         }
-        // printf("\nRequest:\n%s", buffer);
+        // printf("\nRequest:\n%s", buf);
 
         // Get the first line
         int i = 0;
-        while (i < strlen(buffer)) {
-            req[i] = buffer[i];
+        while (i < strlen(buf)) {
+            req[i] = buf[i];
             if (req[i] == '\n')
                 break;
             i++;
@@ -247,12 +247,12 @@ int main(int argc, char *argv[]) {
         printf("%s", req);
 
         // Split line into method, path and version
-        char method[16], path[256], version[16];
+        char method[16], rpath[256], version[16];
         bzero(method,16);
-        bzero(path,256);
+        bzero(rpath,256);
         bzero(version,16);
         char *target[3] = {                 // Array of pointers to
-            method, path, version           //   each target
+            method, rpath, version          //   each target
         };
         int t = 0;                          // Start with method as target
         int j = 0;                          // Index into each target
@@ -265,16 +265,16 @@ int main(int argc, char *argv[]) {
             }
         }
         // printf("Method: %s Path: %s Version: %s",
-        //        method, path, version);
+        //        method, rpath, version);
 
         // Prefix request path with www
-        char path2[256] = "";
-        strcat(path2, DocRoot);             // Prefix with document root
-        strcat(path2, path);
-        // printf("Path: %s\n", path2);
+        char path[256] = "";
+        strcat(path, DocRoot);              // Prefix with document root
+        strcat(path, rpath);
+        // printf("Path: %s\n", path);
 
         // Handle missing resources
-        if (canRead(path2) != 1) {
+        if (canRead(path) != 1) {
             dprintf(newsockfd,"HTTP/1.0 404 Not Found\n");
             dprintf(newsockfd,"Content-Type: text/plain\n");
             dprintf(newsockfd,"\n");
@@ -285,24 +285,24 @@ int main(int argc, char *argv[]) {
 
         // Extract extension from path
         char ext[10];
-        get_extension(path2,ext);
+        getExt(path,ext);
         // printf("Extension: '%s'\n", ext);
 
         // Determine MIME type from path
         char mime[256] = "application/octet-stream";
-        get_mime_type(ext,mime,sizeof(mime));
+        lookupMime(ext,mime,sizeof(mime));
         // printf("MIME Type: '%s'\n", mime);
 
         // Determine size of content in bytes
         struct stat sbuf;
-        if (stat(path2,&sbuf) == -1) {
+        if (stat(path,&sbuf) == -1) {
             perror("ERROR Cannot stat");
         }
         long int fsize = sbuf.st_size;
         // printf("Size of file: %ld\n",fsize);
 
-        if (isDir(path2)) {
-            SendDirPage(newsockfd,path2);
+        if (isDir(path)) {
+            SendDirPage(newsockfd,path);
             // printf("Page: \n%s",page);
         } else {
             // Send the file specified in the path
@@ -310,7 +310,7 @@ int main(int argc, char *argv[]) {
             dprintf(newsockfd,"Content-Type: %s\n",mime);
             dprintf(newsockfd,"Content-Length: %ld\n",fsize);
             dprintf(newsockfd,"\n");
-            swrite_file(newsockfd,path2);
+            swrite_file(newsockfd,path);
         }
 
         usleep(1000);
