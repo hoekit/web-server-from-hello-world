@@ -92,10 +92,10 @@ const char *lookupMime(const char *ext) {
         { "mdown",  "text/plain; charset=utf-8" },
         { "png",    "image/png" },
         { "txt",    "text/plain; charset=utf-8" },
-        { "",       "placeholder/to-stop-search" },
+        { NULL,     NULL },                         // End-of-array marker
     };
     // Linear search
-    for( int i=0; strlen(aMime[i].ext)>0; i++ ){
+    for( int i=0; aMime[i].ext!=NULL; i++ ){
         if( strcmp(ext,aMime[i].ext)==0 ){
             return aMime[i].mime;
         }
