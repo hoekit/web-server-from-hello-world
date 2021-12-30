@@ -16,7 +16,7 @@ public class ServerInitial {
 /*
 # This: ServerInitial.java
 # Prev: FetchCliErrorHandling.java
-# Next: -
+# Next: ServerWithSocket.java
 
 # Build & run:
 JNAME=ServerInitial; javac ${JNAME}.java && java ${JNAME}
