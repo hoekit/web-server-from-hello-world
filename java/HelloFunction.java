@@ -13,7 +13,7 @@ public class HelloFunction {
 /*
 # This: HelloFunction.java
 # Prev: HelloLiteralString.java
-# Next: -
+# Next: FetchFunctionHappy.java
 
 # Build & run:
 JNAME=HelloFunction; javac ${JNAME}.java && java ${JNAME}
