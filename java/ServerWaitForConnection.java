@@ -35,7 +35,7 @@ public class ServerWaitForConnection {
 /*
 # This: ServerWaitForConnection.java
 # Prev: ServerWithSocket.java
-# Next: -
+# Next: ServerSendHelloWorld.java
 
 # Build & run:
 JNAME=ServerWaitForConnection; javac ${JNAME}.java && java ${JNAME}
