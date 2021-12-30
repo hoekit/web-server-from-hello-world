@@ -11,9 +11,9 @@ public class HelloFunction {
 }
 
 /*
-# This: HelloLiteralString.java
-# Prev: HelloWorld.java
-# Next: HelloFunction.java
+# This: HelloFunction.java
+# Prev: HelloLiteralString.java
+# Next: -
 
 # Build & run:
 JNAME=HelloFunction; javac ${JNAME}.java && java ${JNAME}
