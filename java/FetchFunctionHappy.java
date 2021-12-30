@@ -26,7 +26,7 @@ public class FetchFunctionHappy {
 /*
 # This: FetchFunctionHappy.java
 # Prev: HelloFunction.java
-# Next: -
+# Next: FetchFunctionErrorHandling.java
 
 # Build & run:
 JNAME=FetchFunctionHappy; javac ${JNAME}.java && java ${JNAME}
