@@ -35,6 +35,9 @@ A project to build a simple web server in C starting from [hello-world.c](txt/he
 - [http-server-with-get.c](txt/http-server-with-get.c.txt)
 - [http-server-404-on-not-found.c](txt/http-server-404-on-not-found.c.txt)
 - [http-server-serve-image-jpeg.c](txt/http-server-serve-image-jpeg.c.txt)
+- [http-server-list-dir.c](txt/http-server-list-dir.c.txt)
+- [http-server-command-line-args.c](txt/http-server-command-line-args.c.txt)
+
 
 **Obseleted**
 
