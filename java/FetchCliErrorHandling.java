@@ -35,7 +35,7 @@ public class FetchCliErrorHandling {
 /*
 # This: FetchCliErrorHandling.java
 # Prev: FetchFunctionErrorHandling.java
-# Next: -
+# Next: ServerInitial.java
 
 # Build & run:
 JNAME=FetchCliErrorHandling; javac ${JNAME}.java && java ${JNAME}
