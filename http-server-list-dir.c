@@ -72,10 +72,11 @@ static int canRead(char *res) {
     return 1;
 }
 static void getExt(const char *path, char *ext) {
-    bzero(ext,sizeof(ext));
+    int szExt = sizeof(ext);
+    bzero(ext,szExt);
     char *dot = strrchr(path, '.');         // find last '.' char
     if (dot != NULL) {                      // if found
-        strncpy(ext,++dot,9);               //   copy after '.' to ext
+        strncpy(ext,++dot,szExt-1);         //   copy after '.' to ext
     }
 }
 const char *lookupMime(const char *ext) {
@@ -125,7 +126,7 @@ static int SendDirPage(int fd, const char *path, const char *base) {
         "<html>\n"
         "<head><meta charset=\"utf-8\"/></head>\n"
         "<body>\n"
-        "<h2>Directory %s</h2>\n<ul>\n",base);
+        "<h2>Directory %s</h2>\n<pre><ul>\n",base);
 
     // Iterate over directory entries
     DIR *dirp = opendir(path);
@@ -144,7 +145,8 @@ static int SendDirPage(int fd, const char *path, const char *base) {
 
         if (dp->d_type == 4) {                  // Directory
             // printf("%s/\n", dp->d_name);
-            dprintf(fd,"  <li><a href=\"%s/%s/\">%s/</a>\n",base,dp->d_name,dp->d_name);
+            dprintf(fd,"  <li><a href=\"%s/%s/\">%s/</a>\n",
+                base,dp->d_name,dp->d_name);
         } else if (dp->d_type == 8) {           // Files
             // printf("%s\n", dp->d_name);
             dprintf(fd,"  <li><a href=\"%s\">%s</a>\n",dp->d_name,dp->d_name);
@@ -154,7 +156,7 @@ static int SendDirPage(int fd, const char *path, const char *base) {
         }
     }
 
-    dprintf(fd,"</ul>\n</body>\n</html>");
+    dprintf(fd,"</ul></code>\n</body>\n</html>");
 }
 
 /*
