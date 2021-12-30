@@ -8,7 +8,7 @@ public class HelloWorld {
 /*
 # This: HelloWorld.java
 # Prev: -
-# Next: 
+# Next: HelloLiteralString.java
 
 # Build & run:
 JNAME=HelloWorld; javac ${JNAME}.java && java ${JNAME}
