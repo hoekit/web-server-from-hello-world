@@ -39,6 +39,14 @@ A project to build a simple web server in C starting from [hello-world.c](txt/he
 - [http-server-command-line-args.c](txt/http-server-command-line-args.c.txt)
 
 
+## Java Implementation
+
+- [`HelloWorld.java`](java/HelloWorld.java)
+- [`HelloLiteralString.java`](java/HelloLiteralString.java)
+- [`HelloFunction.java`](java/HelloFunction.java)
+- [`FetchFunctionHappy.java`](java/FetchFunctionHappy.java)
+
+
 **Obseleted**
 
 - [hello-server.c](txt/hello-server.c.txt)
