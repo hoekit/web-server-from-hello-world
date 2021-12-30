@@ -85,10 +85,11 @@ const char *lookupMime(const char *ext) {
         const char *ext;
         const char *mime;
     } aMime[] = {
-        { "c",      "text/plain; charset=utf-8" },
+        { "c",      "text/plain; charset=utf-8" },  // text/x-c
         { "css",    "text/css; charset=utf-8" },
         { "html",   "text/html; charset=utf-8" },
         { "ico",    "image/x-icon" },
+        { "java",   "text/plain; charset=utf-8" },  // text/x-java-source
         { "jpg",    "image/jpeg" },
         { "md",     "text/plain; charset=utf-8" },
         { "mdown",  "text/plain; charset=utf-8" },
