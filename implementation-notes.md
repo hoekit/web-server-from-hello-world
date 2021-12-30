@@ -100,3 +100,60 @@ Solution: Use SO_REUSEADDR
             &(int){1}, sizeof(int)) < 0)
         error("setsockopt(SO_REUSEADDR) failed");
 
+
+**C Webserver then Java Webserver**
+
+- Our final goal is a webserver running on Android and iOS
+
+- Since the native programming language on Android is Java and Kotlin,
+  it makes sense to try and write a webserver in either of these
+  languages
+
+- Let's start with java
+
+
+----
+# Java Notes
+
+**`public static void main(String[] args) {...}`**
+
+- The `main` function must be public, static and void
+
+- A Java program terminates when:
+    - All threads that are not daemon threads terminate
+    - Some thread invokes either the Runtime.exit or System.exit method
+
+- The `main` function does not control when the program terminates so
+  the return value is meaningless
+
+- See: https://stackoverflow.com/questions/540396/why-is-main-in-java-void
+
+
+**Stopping the JVM**
+
+- System.exit(int status)
+    - Equivalent to Runtime.getRuntime().exit(status)
+    - The conventional way
+
+- Runtime.exit(int status)
+    - Terminates the currently running JVM by initiating its shutdown
+      sequence i.e.
+        - Run all registered shutdown hooks
+        - Run all uninvoked finalizers
+        - Halt the JVM
+
+- Runtime.halt(int status)
+    - Forcibly terminates the running JVM
+
+
+**FileInputStream vs FileReader**
+
+- FileReader is for text
+
+- FileInputStream is for binary data
+
+- So for the webserver, use FileInputStream
+
+
+**Java programs tend to be multi-threaded**
+
