@@ -3,7 +3,7 @@ import java.io.*;
 // FileNotFoundException
 // IOException
 
-public class FetchFunctionErrorHandling {
+public class FetchCliErrorHandling {
 
     private static void fetch(String fname) {
         try{
@@ -23,17 +23,21 @@ public class FetchFunctionErrorHandling {
     }
 
     public static void main(String[] args) {
-        String fname = "no-such-file.java";
-        fetch(fname);
+        if( args.length>0 ){
+            fetch(args[0]);
+        } else {
+            System.out.println(
+                "\n  USAGE: java FetchCliErrorHandling FILE\n");
+        }
     }
 }
 
 /*
-# This: FetchFunctionErrorHandling.java
-# Prev: FetchFunctionHappy.java
-# Next: FetchCliErrorHandling.java
+# This: FetchCliErrorHandling.java
+# Prev: FetchFunctionErrorHandling.java
+# Next: -
 
 # Build & run:
-JNAME=FetchFunctionErrorHandling; javac ${JNAME}.java && java ${JNAME}
+JNAME=FetchCliErrorHandling; javac ${JNAME}.java && java ${JNAME}
 */
 
