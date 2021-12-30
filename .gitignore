@@ -8,3 +8,6 @@ server
 # Skip generated files in www folder
 www
 
+# Skip generated Java Classes
+java/*.class
+
