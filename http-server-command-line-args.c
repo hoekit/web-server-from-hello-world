@@ -31,7 +31,8 @@
 #include <unistd.h>
     // ssize_t write(int fd, const void *buf, size_t count);
 
-static char DocRoot[] = ".";                // Document root
+static char *zRoot = ".";                   // Default document root
+static int zPort = 9001;                    // Default server port
 
 static int swrite_file(int sockfd, char* fname) {
     // Helper to write content of a file to the socket
@@ -171,6 +172,24 @@ static void NotFound(int fd) {
 }
 
 int main(int argc, char *argv[]) {
+
+    // Process command-line arguments
+    while( argc>1 && argv[1][0]=='-' ){
+        char *zOpt = argv[1];
+        char *zVal = argc>2 ? argv[2] : NULL;
+
+        if( strcmp(zOpt,"--root")==0 ){
+            zRoot = zVal==NULL ? zRoot : zVal;
+            printf("zRoot: %s\n",zRoot);
+        }else if( strcmp(zOpt,"--port")==0 ){
+            zPort = zVal==NULL ? zPort : atoi(zVal);
+            printf("zPort: %d\n",zPort);
+        }
+
+        argc -= 2;
+        argv += 2;
+    }
+
     // 1. Create a socket
     int sockfd = socket(                    // Create a socket
                    AF_INET,                 //   IPv4 Internet protocols
@@ -186,17 +205,12 @@ int main(int argc, char *argv[]) {
         perror("setsockopt(SO_REUSEADDR) failed");
 
     // 2. Bind socket to a port
-    int portno = 9001;                      // Default port
-    if (argc > 1) {
-        portno = atoi(argv[1]);             // Port number from first argument
-    }
-
     struct sockaddr_in serv_addr;           // Internet address with port
     bzero( (char*) &serv_addr,              //   Initialize struct to zeros '\0'
            sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;         //   IPv4 Internet protocols
     serv_addr.sin_addr.s_addr = INADDR_ANY; //   IP address of machine
-    serv_addr.sin_port = htons(portno);     //   Port in network byte order
+    serv_addr.sin_port = htons(zPort);      //   Port in network byte order
 
     if ( bind(                              // Bind socket to address/port
            sockfd,                          //   Socket
@@ -275,7 +289,7 @@ int main(int argc, char *argv[]) {
 
         // Prefix request path with www
         char path[256] = "";
-        strcat(path, DocRoot);              // Prefix with document root
+        strcat(path, zRoot);                // Prefix with document root
         strcat(path, rpath);
         // printf("Path: %s\n", path);
 
@@ -343,6 +357,9 @@ int main(int argc, char *argv[]) {
   - Send 404 Not Found if the resource is missing
   - Send .jpg resources
   - List directories
+  - Handles command-line arguments:
+    --root DOCUMENT_ROOT
+    --port SERVER_PORT
 
 - This version cannot:
   - Handle HTTP/1.1 yet
@@ -351,11 +368,11 @@ int main(int argc, char *argv[]) {
   - Handle URIs with query parameters
 */
 /*
-# This: http-server-list-dir.c
-# Prev: http-server-serve-image-jpeg.c
+# This: http-server-command-line-args.c
+# Prev: http-server-list-dir.c
 # Next: -
 
 # Build & run:
-gcc http-server-list-dir.c -o http && ./http
+gcc http-server-command-line-args.c -o http && ./http
 */
 
