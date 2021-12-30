@@ -20,7 +20,7 @@ public class ServerWithSocket {
 /*
 # This: ServerWithSocket.java
 # Prev: ServerInitial.java
-# Next: -
+# Next: ServerWaitForConnection.java
 
 # Build & run:
 JNAME=ServerWithSocket; javac ${JNAME}.java && java ${JNAME}
