@@ -25,10 +25,44 @@
 - It is useful to fill a variable with zeros before using it
 
 
+**Thinking in C**
+
+- Think in terms of a stream of chars or ints
+
+- Think in terms of traversing that stream forwards or backwards
+
+- Think in terms of pointers, pointing to different parts of the stream
+
+
+**`int main(int argc, char **argv) {...}`**
+
+- argc is number of command-line arguments
+- argv is an array of arguments
+- the first argument in the array is always the program name
+- argv[0] is the program name
+- argc is always 1 or more
+
+
+**Pattern for command-line argument processing**
+
+Process arguments in pairs:
+```
+    while( argc>1 && argv[1][0]=='-' ){
+        char *zOpt = argv[1];
+        char *zVal = argc>2 ? argv[2] : NULL;
+
+        // Match and handle each option/value pair e.g.
+        // if( strcmp(zOpt,"--user")==0 ){ ... }
+
+        argv += 2;          // Point to next opt/val pair
+        argc -= 2;          // Reduce left over arguments to process
+    }
+```
+
 
 **Define array**
 
-- Define arrays using braces
+- Define arrays using braces `{}`
 
     `char *stooges[3] = { "Larry", "Curly", "Moe" };`
 
