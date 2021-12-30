@@ -45,6 +45,9 @@ A project to build a simple web server in C starting from [hello-world.c](txt/he
 - [`HelloLiteralString.java`](java/HelloLiteralString.java)
 - [`HelloFunction.java`](java/HelloFunction.java)
 - [`FetchFunctionHappy.java`](java/FetchFunctionHappy.java)
+- [`FetchFunctionErrorHandling.java`](java/FetchFunctionErrorHandling.java)
+- [`FetchCliErrorHandling.java`](java/FetchCliErrorHandling.java)
+- [`ServerInitial.java`](java/ServerInitial.java)
 
 
 **Obseleted**
