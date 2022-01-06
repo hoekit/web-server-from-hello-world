@@ -16,14 +16,13 @@
 #include <dirent.h>
     // DIR *opendir(const char *name);
     // struct dirent *readdir(DIR *dirp);
-#include <strings.h>
-    // void bzero(void *s, size_t n);
 #include <string.h>
     // size_t strlen(const char *s);
     // char *strrchr(const char *s, int c);
     // char *strncpy(char *dest, const char *src, size_t n);
     // int strcmp(const char *s1, const char *s2);
     // char *strstr(const char *haystack, const char *needle);
+    // void *memset(void *s, int c, size_t n);
 #include <netinet/in.h>
     // struct sockaddr_in
 #include <arpa/inet.h>
@@ -74,7 +73,7 @@ static int canRead(char *res) {
 }
 static void getExt(const char *path, char *ext) {
     int szExt = sizeof(ext);
-    bzero(ext,szExt);
+    memset(ext,0,szExt);
     char *dot = strrchr(path, '.');         // find last '.' char
     if (dot != NULL) {                      // if found
         strncpy(ext,++dot,szExt-1);         //   copy after '.' to ext
@@ -207,7 +206,7 @@ int main(int argc, char *argv[]) {
 
     // 2. Bind socket to a port
     struct sockaddr_in serv_addr;           // Internet address with port
-    bzero( (char*) &serv_addr,              //   Initialize struct to zeros '\0'
+    memset( (char*) &serv_addr, 0,          //   Initialize struct to zeros '\0'
            sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;         //   IPv4 Internet protocols
     serv_addr.sin_addr.s_addr = INADDR_ANY; //   IP address of machine
@@ -230,8 +229,8 @@ int main(int argc, char *argv[]) {
     int newsockfd = -1;                     // Fake, invalid socket
     char buf[5120], req[5120];
     for (;;) {
-        bzero(buf,5120);                    // Overwrite buffer with zeros
-        bzero(req,5120);                    // Overwrite req with zeros
+        memset(buf,0,sizeof(buf));          // Overwrite buffer with zeros
+        memset(req,0,sizeof(req));          // Overwrite req with zeros
         clilen = sizeof(cli_addr);          // Size of address may change
         if( newsockfd>-1 )                  // Close valid open sockets
             close(newsockfd);               //   from previous connection
@@ -263,9 +262,9 @@ int main(int argc, char *argv[]) {
 
         // Split line into method, path and version
         char method[16], rpath[256], version[16];
-        bzero(method,16);
-        bzero(rpath,256);
-        bzero(version,16);
+        memset(method,0,sizeof(method));
+        memset(rpath,0,sizeof(rpath));
+        memset(version,0,sizeof(version));
         char *target[3] = {                 // Array of pointers to
             method, rpath, version          //   each target
         };
@@ -361,6 +360,8 @@ int main(int argc, char *argv[]) {
   - Handles command-line arguments:
     --root DOCUMENT_ROOT
     --port SERVER_PORT
+  - Uses memset(3) instead of bzero(3)
+    - bzero(3) is deprecated in POSIX.1-2001 and removed in POSIX.1-2008
 
 - This version cannot:
   - Handle HTTP/1.1 yet
@@ -369,9 +370,9 @@ int main(int argc, char *argv[]) {
   - Handle URIs with query parameters
 */
 /*
-# This: http-server-command-line-args.c
-# Prev: http-server-list-dir.c
-# Next: http-server-command-line-args-memset.c
+# This: http-server-command-line-args-memset.c
+# Prev: http-server-command-line-args.c
+# Next: -
 
 # Build & run:
 gcc http-server-command-line-args.c -o http && ./http
