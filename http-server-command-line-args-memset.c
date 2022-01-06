@@ -375,6 +375,6 @@ int main(int argc, char *argv[]) {
 # Next: -
 
 # Build & run:
-gcc http-server-command-line-args.c -o http && ./http
+gcc http-server-command-line-args-memset.c -o http && ./http
 */
 
