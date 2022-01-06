@@ -25,6 +25,7 @@ public class ServerLoop {
             server = new ServerSocket(5001);
 
             System.out.println("Wait for connection. Ctrl-C to kill.");
+            int n = 0;
             for (;;) {
                 // 3. Wait for client to connect
                 step = "accept connection";
@@ -36,7 +37,7 @@ public class ServerLoop {
 
                 // 4.1 Send Hello, Loop!
                 step = "write to socket";
-                sOut.writeUTF("Hello, Loop!\n");
+                sOut.writeUTF("Hello, Loop #"+ (n++) +"!\n");
 
                 // 4.2 Cleanup
                 step = "close socket reader";
