@@ -1,6 +1,7 @@
 # Web Server from "hello world"
 A project to build a simple web server in C starting from [hello-world.c](txt/hello-world.c.txt).
 
+
 **Read source code in the following sequence:**
 
 - [hello-world.c](txt/hello-world.c.txt)
@@ -12,6 +13,7 @@ A project to build a simple web server in C starting from [hello-world.c](txt/he
 
 **Learn more about:**
 
+- [Background](background.md) that motivated this project
 - [Sockets](learn-about-sockets.md)
 - [CGI](learn-about-cgi.md)
 - [Sending Images](learn-about-sending-images.md)
@@ -48,6 +50,10 @@ A project to build a simple web server in C starting from [hello-world.c](txt/he
 - [`FetchFunctionErrorHandling.java`](java/FetchFunctionErrorHandling.java)
 - [`FetchCliErrorHandling.java`](java/FetchCliErrorHandling.java)
 - [`ServerInitial.java`](java/ServerInitial.java)
+- [`ServerWithSocket.java`](java/ServerWithSocket.java)
+- [`ServerWaitForConnection.java`](java/ServerWaitForConnection.java)
+- [`ServerSendHelloWorld.java`](java/ServerSendHelloWorld.java)
+- [`ServerLoop.java`](java/ServerLoop.java)
 
 
 **Obseleted**
