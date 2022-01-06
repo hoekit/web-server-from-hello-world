@@ -1,44 +1,45 @@
 # Web Server from "hello world"
-A project to build a simple web server in C starting from [hello-world.c](txt/hello-world.c.txt).
+A project to build a simple web server in C starting from [`hello-world.c`](txt/hello-world.c.txt).
 
 
 **Read source code in the following sequence:**
 
-- [hello-world.c](txt/hello-world.c.txt)
-- [hello-literal-string.c](txt/hello-literal-string.c.txt)
-- [hello-function.c](txt/hello-function.c.txt)
-- [fetch-function-happy.c](txt/fetch-function-happy.c.txt)
-- [fetch-function-error-handling.c](txt/fetch-function-error-handling.c.txt)
-- [fetch-cli-error-handling.c](txt/fetch-cli-error-handling.c.txt)
+- [`hello-world.c`](txt/hello-world.c.txt)
+- [`hello-literal-string.c`](txt/hello-literal-string.c.txt)
+- [`hello-function.c`](txt/hello-function.c.txt)
+- [`fetch-function-happy.c`](txt/fetch-function-happy.c.txt)
+- [`fetch-function-error-handling.c`](txt/fetch-function-error-handling.c.txt)
+- [`fetch-cli-error-handling.c`](txt/fetch-cli-error-handling.c.txt)
 
 **Learn more about:**
 
-- [Background](background.md) that motivated this project
-- [Sockets](learn-about-sockets.md)
-- [CGI](learn-about-cgi.md)
-- [Sending Images](learn-about-sending-images.md)
-- [Implementation Notes](implementation-notes.md)
+- [`Background`](background.md) that motivated this project
+- [`Sockets`](learn-about-sockets.md)
+- [`CGI`](learn-about-cgi.md)
+- [`Sending Images`](learn-about-sending-images.md)
+- [`Implementation Notes`](implementation-notes.md)
     - Description of various considerations when implementing the server
 
 **Continue with client-server version of hello world:**
 
-- [Client Server Overview](hello-client-server-overview.md)
-- [server-initial.c](txt/server-initial.c.txt)
-- [server-with-socket.c](txt/server-with-socket.c.txt)
-- [server-bind-to-port.c](txt/server-bind-to-port.c.txt)
-- [server-wait-for-connection.c](txt/server-wait-for-connection.c.txt)
-- [server-send-hello-world.c](txt/server-send-hello-world.c.txt)
-- [server-loop.c](txt/server-loop.c.txt)
+- [`Client Server Overview`](hello-client-server-overview.md)
+- [`server-initial.c`](txt/server-initial.c.txt)
+- [`server-with-socket.c`](txt/server-with-socket.c.txt)
+- [`server-bind-to-port.c`](txt/server-bind-to-port.c.txt)
+- [`server-wait-for-connection.c`](txt/server-wait-for-connection.c.txt)
+- [`server-send-hello-world.c`](txt/server-send-hello-world.c.txt)
+- [`server-loop.c`](txt/server-loop.c.txt)
 
 **Start building the HTTP server:**
 
-- [http-server-initial.c](txt/http-server-initial.c.txt)
-- [http-server-fetch.c](txt/http-server-fetch.c.txt)
-- [http-server-with-get.c](txt/http-server-with-get.c.txt)
-- [http-server-404-on-not-found.c](txt/http-server-404-on-not-found.c.txt)
-- [http-server-serve-image-jpeg.c](txt/http-server-serve-image-jpeg.c.txt)
-- [http-server-list-dir.c](txt/http-server-list-dir.c.txt)
-- [http-server-command-line-args.c](txt/http-server-command-line-args.c.txt)
+- [`http-server-initial.c`](txt/http-server-initial.c.txt)
+- [`http-server-fetch.c`](txt/http-server-fetch.c.txt)
+- [`http-server-with-get.c`](txt/http-server-with-get.c.txt)
+- [`http-server-404-on-not-found.c`](txt/http-server-404-on-not-found.c.txt)
+- [`http-server-serve-image-jpeg.c`](txt/http-server-serve-image-jpeg.c.txt)
+- [`http-server-list-dir.c`](txt/http-server-list-dir.c.txt)
+- [`http-server-command-line-args.c`](txt/http-server-command-line-args.c.txt)
+- [`http-server-command-line-args-memset.c`](txt/http-server-command-line-args-memset.c.txt)
 
 
 ## Java Implementation
@@ -58,10 +59,10 @@ A project to build a simple web server in C starting from [hello-world.c](txt/he
 
 **Obseleted**
 
-- [hello-server.c](txt/hello-server.c.txt)
-    - Same version in the Linux Howto [Sockets Tutorial](https://www.linuxhowtos.org/C_C++/socket.htm)
-- [hello-client.c](txt/hello-client.c.txt)
-    - Same version in the Linux Howto [Sockets Tutorial](https://www.linuxhowtos.org/C_C++/socket.htm)
+- [`hello-server.c`](txt/hello-server.c.txt)
+    - Same version in the Linux Howto [`Sockets Tutorial`](https://www.linuxhowtos.org/C_C++/socket.htm)
+- [`hello-client.c`](txt/hello-client.c.txt)
+    - Same version in the Linux Howto [`Sockets Tutorial`](https://www.linuxhowtos.org/C_C++/socket.htm)
 
 **TODO**
 
