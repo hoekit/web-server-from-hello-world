@@ -33,6 +33,9 @@ A project to build a simple web server in C starting from [`hello-world.c`](txt/
 **Start building the HTTP server:**
 
 - [`http-server-initial.c`](txt/http-server-initial.c.txt)
+    - Add helper to write to the socket
+    - HTTP responses has to follow the HTTP protocol
+    - [`vimdiff`](img/vimdiff-hello-server-initial_server-loop.png)
 - [`http-server-fetch.c`](txt/http-server-fetch.c.txt)
 - [`http-server-with-get.c`](txt/http-server-with-get.c.txt)
 - [`http-server-404-on-not-found.c`](txt/http-server-404-on-not-found.c.txt)
@@ -45,16 +48,33 @@ A project to build a simple web server in C starting from [`hello-world.c`](txt/
 ## Java Implementation
 
 - [`HelloWorld.java`](java/HelloWorld.java)
+    - The canonical Hello World program in Java
 - [`HelloLiteralString.java`](java/HelloLiteralString.java)
+    - Prints a variable containing a literal string.
+    - [`vimdiff`](img/vimdiff-HelloWorld-HelloLiteralString.png)
 - [`HelloFunction.java`](java/HelloFunction.java)
+    - Sends name variable to a function which then prints it.
+    - [`vimdiff`](img/vimdiff-HelloLiteralString-HelloFunction.png)
 - [`FetchFunctionHappy.java`](java/FetchFunctionHappy.java)
+    - Given a filename, read its content and print it. No error handling.
+    - [`vimdiff`](img/vimdiff-HelloFunction-FetchFunctionHappy.png)
 - [`FetchFunctionErrorHandling.java`](java/FetchFunctionErrorHandling.java)
+    - Given a filename, read its content and print it. Has error handling.
+    - [`vimdiff`](img/vimdiff-FetchFunctionHappy-FetchFunctionErrorHandling.png)
 - [`FetchCliErrorHandling.java`](java/FetchCliErrorHandling.java)
+    - Print content of the filename provided via command line.
+    - [`vimdiff`](img/vimdiff-FetchFunctionErrorHandling-FetchCliErrorHandling.png)
 - [`ServerInitial.java`](java/ServerInitial.java)
 - [`ServerWithSocket.java`](java/ServerWithSocket.java)
 - [`ServerWaitForConnection.java`](java/ServerWaitForConnection.java)
 - [`ServerSendHelloWorld.java`](java/ServerSendHelloWorld.java)
 - [`ServerLoop.java`](java/ServerLoop.java)
+
+**Then build the HTTP server:**
+
+- [`HttpServerInitial.java`](java/HttpServerInitial.java)
+    - Returns HTTP responses with simple HTTP/1.0 headers
+    - [`vimdiff`](img/vimdiff-ServerLoop-HttpServerInitial.png)
 
 
 **Obseleted**
