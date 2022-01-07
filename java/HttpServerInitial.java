@@ -3,7 +3,7 @@ import java.net.Socket;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class ServerLoop {
+public class HttpServerInitial {
 
     // Print error step and exit
     private static void Stop(String step, Exception e) {
@@ -35,9 +35,16 @@ public class ServerLoop {
                 step = "get socket for writing";
                 sOut = new DataOutputStream(socket.getOutputStream());
 
-                // 4.1 Send Hello, Loop!
+                // 4.1 Send Hello, World! (N)
                 step = "write to socket";
-                sOut.writeUTF("Hello, Loop #"+ (n++) +"!\n");
+                sOut.writeUTF(
+                      "HTTP/1.0 200 OK\n"
+                    + "Content-Type: text/html\n"
+                    + "\n"
+                    + "<html><body><h2>Hello, World! ("
+                      + (n++)
+                      + ")</h2></body></html>\n"
+                );
 
                 // 4.2 Cleanup
                 step = "close socket reader";
@@ -59,21 +66,17 @@ public class ServerLoop {
     }
 }
 
-/* Test:
-telnet localhost 5001
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-Hello, World!
-Connection closed by foreign host.
+/* Return HTTP/1.0 response
+  - This version sends a simple HTTP/1.0 response when the client
+    connects at http://127.0/0.1:5001
 */
 
 /*
-# This: ServerLoop.java
-# Prev: ServerSendHelloWorld.java
-# Next: HttpServerInitial.java
+# This: HttpServerInitial.java
+# Prev: ServerLoop.java
+# Next: -
 
 # Build & run:
-JNAME=ServerLoop; javac ${JNAME}.java && java ${JNAME}
+JNAME=HttpServerInitial; javac ${JNAME}.java && java ${JNAME}
 */
 
