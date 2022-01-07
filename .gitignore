@@ -11,3 +11,9 @@ www
 # Skip generated Java Classes
 java/*.class
 
+# Skip symlinks
+img
+txt
+
+# Skip learn folder for the time being
+/learn
