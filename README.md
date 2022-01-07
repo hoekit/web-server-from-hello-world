@@ -37,7 +37,16 @@ A project to build a simple web server in C starting from [`hello-world.c`](txt/
     - HTTP responses has to follow the HTTP protocol
     - [`vimdiff`](img/vimdiff-hello-server-initial_server-loop.png)
 - [`http-server-fetch.c`](txt/http-server-fetch.c.txt)
+    - Return content from file rather hard-coded content
+    - Modify helper in
+      [`fetch-function-error-handling.c`](txt/fetch-function-error-handling.c.txt)
+      to read content from file and write to socket
+    - [`vimdiff`](img/vimdiff_http-server-initial_http-server-fetch.png)
 - [`http-server-with-get.c`](txt/http-server-with-get.c.txt)
+    - Parse HTTP request into Method, Path, Protocol fields
+    - Ignore Method field (assume GET) and Protocol field (assume HTTP/1.0)
+    - Return contents of file specified in the Path field.
+    - [`vimdiff`](img/vimdiff_http-server-fetch_http-server-with-get.png)
 - [`http-server-404-on-not-found.c`](txt/http-server-404-on-not-found.c.txt)
 - [`http-server-serve-image-jpeg.c`](txt/http-server-serve-image-jpeg.c.txt)
 - [`http-server-list-dir.c`](txt/http-server-list-dir.c.txt)
