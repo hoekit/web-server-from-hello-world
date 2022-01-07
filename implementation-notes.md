@@ -115,6 +115,8 @@ Solution: Use SO_REUSEADDR
 ----
 # Java Notes
 
+**Java programs tend to be multi-threaded**
+
 **`public static void main(String[] args) {...}`**
 
 - The `main` function must be public, static and void
@@ -155,5 +157,26 @@ Solution: Use SO_REUSEADDR
 - So for the webserver, use FileInputStream
 
 
-**Java programs tend to be multi-threaded**
+**FileInputStream (not DataInputStream) for Web Server**
+
+- A FileInputStream obtains input bytes from a file in a file system.
+  What files are available depends on the host environment.
+
+- FileInputStream is meant for reading streams of raw bytes such as
+  image data. For reading streams of characters, consider using
+  FileReader.
+
+- A data input stream lets an application read primitive Java data types
+  from an underlying input stream in a machine-independent way. An
+  application uses a data output stream to write data that can later be
+  read by a data input stream.
+
+- DataInputStream is not necessarily safe for multithreaded access.
+  Thread safety is optional and is the responsibility of users of
+  methods in this class.
+
+- The DataInputStream is more complex that the FileInputStream.
+
+- A web server serving a static file does not need the added complexity
+  of a DataInputStream, so the FileInputStream is good enough.
 
