@@ -2,14 +2,32 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 
-public class HttpServerInitial {
+public class HttpServerFetch {
 
     // Print error step and exit
     private static void Stop(String step, Exception e) {
         System.out.println(
             "ERROR " + step + ": " + e.getMessage());
         System.exit(1);
+    }
+
+    private static void sWriteFile(DataOutputStream sOut, String fname) {
+        try{
+            FileInputStream sIn = new FileInputStream(fname);
+            int i;
+            byte buf[] = new byte[100];
+            while( (i = sIn.read(buf))>0 ){
+                sOut.write(buf,0,i);
+            }
+            sIn.close();
+        }catch( FileNotFoundException e ){
+            System.out.println("404 Not Found: "+fname);
+        }catch( IOException e ){
+            System.out.println("500 Server Error: Read failed");
+        }
     }
 
     public static void main(String[] args) {
@@ -41,10 +59,8 @@ public class HttpServerInitial {
                       "HTTP/1.0 200 OK\n"
                     + "Content-Type: text/html\n"
                     + "\n"
-                    + "<html><body><h2>Hello, World! ("
-                      + (n++)
-                      + ")</h2></body></html>\n"
                 );
+                sWriteFile(sOut,"www/hello.html");
 
                 // 4.2 Cleanup
                 step = "close socket reader";
@@ -66,17 +82,17 @@ public class HttpServerInitial {
     }
 }
 
-/* Return HTTP/1.0 response
-  - This version sends a simple HTTP/1.0 response when the client
-    connects at http://127.0/0.1:5001
+/* Return HTTP/1.0 response from HTML file
+  - This version reads from a HTML file containing "Hello World!" and sends
+    that as response when the client connects at http://127.0/0.1:5001
 */
 
 /*
-# This: HttpServerInitial.java
-# Prev: ServerLoop.java
-# Next: HttpServerFetch.java
+# This: HttpServerFetch.java
+# Prev: HttpServerInitial.java
+# Next: -
 
 # Build & run:
-JNAME=HttpServerInitial; javac ${JNAME}.java && java ${JNAME}
+JNAME=HttpServerFetch; javac ${JNAME}.java && java ${JNAME}
 */
 

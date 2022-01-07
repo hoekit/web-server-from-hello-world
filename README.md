@@ -73,8 +73,12 @@ A project to build a simple web server in C starting from [`hello-world.c`](txt/
 **Then build the HTTP server:**
 
 - [`HttpServerInitial.java`](java/HttpServerInitial.java)
-    - Returns HTTP responses with simple HTTP/1.0 headers
+    - Returns hard-coded HTTP response with simple HTTP/1.0 headers
     - [`vimdiff`](img/vimdiff-ServerLoop-HttpServerInitial.png)
+- [`HttpServerFetch.java`](java/HttpServerFetch.java)
+    - Returns content of a HTML file
+    - Use helper to read content from file and write to socket
+    - [`vimdiff`](img/vimdiff-HttpServerInitial-HttpServerFetch.png)
 
 
 **Obseleted**
