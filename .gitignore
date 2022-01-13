@@ -12,7 +12,6 @@ www
 java/*.class
 
 # Skip symlinks
-img
 txt
 
 # Skip learn folder for the time being
