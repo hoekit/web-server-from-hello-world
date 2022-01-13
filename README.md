@@ -88,6 +88,12 @@ A project to build a simple web server in C starting from [`hello-world.c`](txt/
     - Returns content of a HTML file
     - Use helper to read content from file and write to socket
     - [`vimdiff`](img/vimdiff-HttpServerInitial-HttpServerFetch.png)
+- [`HttpServerWithGet.java`](java/HttpServerWithGet.java)
+    - Parse HTTP request into Method, Path, Protocol fields
+    - Ignore Method field (assume GET) and Protocol field (assume
+      HTTP/1.0)
+    - Return contents of file specified in the Path field
+    - [`vimdiff`](img/vimdiff-HttpServerFetch-HttpServerWithGet.png)
 
 
 **Obseleted**

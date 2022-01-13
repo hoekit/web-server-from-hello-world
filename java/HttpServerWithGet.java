@@ -1,11 +1,12 @@
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.DataOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 
-public class HttpServerFetch {
+public class HttpServerWithGet {
 
     // Print error step and exit
     private static void Stop(String step, Exception e) {
@@ -33,6 +34,7 @@ public class HttpServerFetch {
     public static void main(String[] args) {
         ServerSocket server = null;
         Socket socket = null;
+        DataInputStream sIn = null;
         DataOutputStream sOut = null;
         String step = "";
 
@@ -49,6 +51,16 @@ public class HttpServerFetch {
                 step = "accept connection";
                 socket = server.accept();
 
+                // Read request
+                sIn = new DataInputStream(socket.getInputStream());
+                // Assume max request 5120 bytes (FIXME)
+                byte[] buf = new byte[5120];
+                sIn.read(buf);
+
+                String req = new String(buf);
+                // reqPart: METHOD URL PROTOCOL
+                String[] reqPart = req.split(" ",3);
+
                 // 4. Setup output socket
                 step = "get socket for writing";
                 sOut = new DataOutputStream(socket.getOutputStream());
@@ -60,11 +72,15 @@ public class HttpServerFetch {
                     + "Content-Type: text/html\n"
                     + "\n"
                 );
-                sWriteFile(sOut,"www/hello.html");
+                // Assumes METHOD = GET (FIXME)
+                // Assumes valid PROTOCOL (FIXME)
+                sWriteFile(sOut,"www"+reqPart[1]);
 
                 // 4.2 Cleanup
-                step = "close socket reader";
+                step = "close socket wrider";
                 sOut.close();
+                step = "close socket reader";
+                sIn.close();
                 step = "close socket";
                 socket.close();
             }
@@ -83,17 +99,16 @@ public class HttpServerFetch {
 }
 
 /* Return HTTP/1.0 response from HTML file
-
-- This version can handle a HTTP/1.0 GET request
-  e.g. GET /www/hello.html HTTP/1.0
+  - This version reads from a HTML file containing "Hello World!" and sends
+    that as response when the client connects at http://127.0/0.1:5001
 */
 
 /*
-# This: HttpServerFetch.java
-# Prev: HttpServerInitial.java
-# Next: HttpServerWithGet.java
+# This: HttpServerWithGet.java
+# Prev: HttpServerFetch.java
+# Next: -
 
 # Build & run:
-JNAME=HttpServerFetch; javac ${JNAME}.java && java ${JNAME}
+JNAME=HttpServerWithGet; javac ${JNAME}.java && java ${JNAME}
 */
 
