@@ -52,6 +52,17 @@ A project to build a simple web server in C starting from [`hello-world.c`](txt/
     - Return 404 error if resource not found and close the connection
     - [`vimdiff`](img/vimdiff_http-server-with-get_http-server-404-on-not-found.png)
 - [`http-server-serve-image-jpeg.c`](txt/http-server-serve-image-jpeg.c.txt)
+    - Extract extension of resource e.g. .jpg
+    - Lookup MIME type using the extension
+    - Include the `Content-Length` in response
+    - Increase size of request to 5120 bytes
+    - Refactor: Remove helper `swrite()`
+    - Refactor: Replace `swrite()` with standard library function `dprintf()`
+    - `vimdiff`
+    [`/1`](img/vimdiff_http-server-404-on-not-found_http-server-serve-image-jpeg_a.png)
+    [`/2`](img/vimdiff_http-server-404-on-not-found_http-server-serve-image-jpeg_b.png)
+    [`/3`](img/vimdiff_http-server-404-on-not-found_http-server-serve-image-jpeg_c.png)
+    [`/4`](img/vimdiff_http-server-404-on-not-found_http-server-serve-image-jpeg_d.png)
 - [`http-server-list-dir.c`](txt/http-server-list-dir.c.txt)
 - [`http-server-command-line-args.c`](txt/http-server-command-line-args.c.txt)
 - [`http-server-command-line-args-memset.c`](txt/http-server-command-line-args-memset.c.txt)
