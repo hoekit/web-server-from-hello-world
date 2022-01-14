@@ -21,6 +21,9 @@ This project fits nicely into some of our current goals, i.e.:
 
 **Similar or related projects:**
 
+WebDAV - Perhaps using the more mature webDAV protocol is better
+- http://www.webdav.org/
+
 Webio - An C embedded web server with embedded files and CGI
 - https://www.codeproject.com/articles/27950/webio-an-embedded-web-server
 
