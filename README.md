@@ -48,6 +48,9 @@ A project to build a simple web server in C starting from [`hello-world.c`](txt/
     - Return contents of file specified in the Path field.
     - [`vimdiff`](img/vimdiff_http-server-fetch_http-server-with-get.png)
 - [`http-server-404-on-not-found.c`](txt/http-server-404-on-not-found.c.txt)
+    - Add helper res_not_found() to check if resource can be accessed
+    - Return 404 error if resource not found and close the connection
+    - [`vimdiff`](img/vimdiff_http-server-with-get_http-server-404-on-not-found.png)
 - [`http-server-serve-image-jpeg.c`](txt/http-server-serve-image-jpeg.c.txt)
 - [`http-server-list-dir.c`](txt/http-server-list-dir.c.txt)
 - [`http-server-command-line-args.c`](txt/http-server-command-line-args.c.txt)
@@ -94,7 +97,15 @@ A project to build a simple web server in C starting from [`hello-world.c`](txt/
       HTTP/1.0)
     - Return contents of file specified in the Path field
     - [`vimdiff`](img/vimdiff-HttpServerFetch-HttpServerWithGet.png)
-
+- [`HttpServer404.java`](java/HttpServer404.java)
+    - Add helper ResFound() to check if resource can be accessed
+    - Return 404 error if resource not accessible and close the connection
+    - Apply pattern: Close opened files before assignment in infinite loop
+    - [`vimdiff/top`](img/vimdiff-HttpServerWithGet-HttpServer404-a.png) [`vimdiff/bot`](img/vimdiff-HttpServerWithGet-HttpServer404-b.png)
+- HttpServerServeImage.java
+- HttpServerListDir.java
+- HttpServerCommandLineArgs.java
+- HttpServerCommandLineArgsMemset.java
 
 **Obseleted**
 

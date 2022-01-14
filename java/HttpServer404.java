@@ -6,13 +6,26 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 
-public class HttpServerWithGet {
+public class HttpServer404 {
 
     // Print error step and exit
     private static void Stop(String step, Exception e) {
         System.out.println(
             "ERROR " + step + ": " + e.getMessage());
         System.exit(1);
+    }
+
+    private static boolean ResFound(String fname) {
+        try{
+            FileInputStream sIn = new FileInputStream(fname);
+            sIn.close();
+            return true;
+        }catch( FileNotFoundException e ){
+            System.out.println("404 Not Found: "+fname);
+        }catch( IOException e ){
+            System.out.println("500 Server Error: failed close file: "+fname);
+        }
+        return false;
     }
 
     private static void sWriteFile(DataOutputStream sOut, String fname) {
@@ -47,11 +60,19 @@ public class HttpServerWithGet {
             System.out.println("Wait for connection. Ctrl-C to kill.");
             int n = 0;
             for (;;) {
+                if( socket!=null ){
+                    step = "close previously opened socket, if any";
+                    socket.close();
+                }
                 // 3. Wait for client to connect
                 step = "accept connection";
                 socket = server.accept();
 
                 // Read request
+                if( sIn!=null ){
+                    step = "close previously opened socket reader, if any";
+                    sIn.close();
+                }
                 sIn = new DataInputStream(socket.getInputStream());
                 // Assume max request 5120 bytes (FIXME)
                 byte[] buf = new byte[5120];
@@ -60,10 +81,27 @@ public class HttpServerWithGet {
                 String req = new String(buf);
                 // reqPart: METHOD URL PROTOCOL
                 String[] reqPart = req.split(" ",3);
+                if( reqPart.length<3 )                  // All parts defined
+                    continue;
 
                 // 4. Setup output socket
+                if( sOut!=null ){
+                    step = "close previously opened socket writer, if any";
+                    sOut.close();
+                }
                 step = "get socket for writing";
                 sOut = new DataOutputStream(socket.getOutputStream());
+
+                // Check whether URL resource exists
+                if( !ResFound("www"+reqPart[1]) ){
+                    sOut.writeUTF(
+                          "HTTP/1.0 404 OK\r\n"
+                        + "Content-Type: text/plain\r\n"
+                        + "\r\n"
+                        + "404 Not Found\n"
+                    );
+                    continue;
+                }
 
                 // 4.1 Send Hello, World! (N)
                 step = "write to socket";
@@ -75,14 +113,6 @@ public class HttpServerWithGet {
                 // Assumes METHOD = GET (FIXME)
                 // Assumes valid PROTOCOL (FIXME)
                 sWriteFile(sOut,"www"+reqPart[1]);
-
-                // 4.2 Cleanup
-                step = "close socket wrider";
-                sOut.close();
-                step = "close socket reader";
-                sIn.close();
-                step = "close socket";
-                socket.close();
             }
         }catch( IOException e ){
             Stop(step, e);
@@ -99,16 +129,18 @@ public class HttpServerWithGet {
 }
 
 /* Return HTTP/1.0 response from HTML file
-  - This version reads from a HTML file containing "Hello World!" and sends
-    that as response when the client connects at http://127.0/0.1:5001
+
+- This version can:
+  - handle a HTTP/1.0 GET request e.g. GET /hello.html HTTP/1.0
+  - send 404 Not Found if requested resource is missing
 */
 
 /*
-# This: HttpServerWithGet.java
-# Prev: HttpServerFetch.java
-# Next: HttpServer404.java
+# This: HttpServer404.java
+# Prev: HttpServerWithGet.java
+# Next: -
 
 # Build & run:
-JNAME=HttpServerWithGet; javac ${JNAME}.java && java ${JNAME}
+JNAME=HttpServer404; javac ${JNAME}.java && java ${JNAME}
 */
 
